@@ -1,0 +1,76 @@
+disabled_rules: # rule identifiers to exclude from running
+  - trailing_whitespace
+  - line_length
+
+opt_in_rules: # some rules are only opt-in
+  - empty_count
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - missing_docs
+  - private_outlet
+  - redundant_nil_coalescing
+  - syntactic_sugar
+  - toggle_bool
+  - unused_import
+  - unused_private_declaration
+
+included: # paths to include during linting
+  - GolfTracker
+
+excluded: # paths to ignore during linting
+  - Carthage
+  - Pods
+  - DerivedData
+  - .build
+
+# configurable rules can be customized from this configuration file
+line_length:
+  warning: 120
+  error: 150
+
+identifier_name:
+  min_length:
+    warning: 2
+    error: 1
+  max_length:
+    warning: 50
+    error: 60
+
+type_name:
+  min_length:
+    warning: 3
+    error: 2
+  max_length:
+    warning: 50
+    error: 60
+
+file_length:
+  warning: 500
+  error: 800
+
+function_body_length:
+  warning: 60
+  error: 100
+
+type_body_length:
+  warning: 300
+  error: 400
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+nesting:
+  type_level:
+    warning: 2
+    error: 3
+  statement_level:
+    warning: 5
+    error: 10
+
+# rules configuration
+force_cast: warning
+force_try: warning
+force_unwrapping: warning
+
+reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji, sonarqube, markdown) 
