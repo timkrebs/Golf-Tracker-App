@@ -113,10 +113,10 @@ struct LoginView: View {
                                             .font(.system(size: 16))
                                     }
                                     
-                                    Button(action: { showPassword.toggle() }) {
+                                    Button(action: { showPassword.toggle() }, label: {
                                         Image(systemName: showPassword ? "eye.slash" : "eye")
                                             .foregroundColor(.gray)
-                                    }
+                                    })
                                 }
                                 .padding()
                                 .background(Color.gray.opacity(0.1))
@@ -129,7 +129,7 @@ struct LoginView: View {
                             Task {
                                 await signIn()
                             }
-                        }) {
+                        }, label: {
                             HStack {
                                 if authService.isLoading {
                                     ProgressView()
@@ -144,7 +144,7 @@ struct LoginView: View {
                             .frame(height: 48)
                             .background(Color(red: 0.2, green: 0.8, blue: 0.4))
                             .cornerRadius(12)
-                        }
+                        })
                         .disabled(authService.isLoading || email.isEmpty || password.isEmpty)
                         
                         // OAuth Divider
@@ -160,7 +160,7 @@ struct LoginView: View {
                                     Task {
                                         await authService.signInWithGoogle()
                                     }
-                                }) {
+                                }, label: {
                                     HStack {
                                         Image(systemName: "globe")
                                         Text("Google")
@@ -175,14 +175,14 @@ struct LoginView: View {
                                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                     )
                                     .cornerRadius(8)
-                                }
+                                })
                                 
                                 // GitHub Sign In
                                 Button(action: {
                                     Task {
                                         await authService.signInWithGitHub()
                                     }
-                                }) {
+                                }, label: {
                                     HStack {
                                         Image(systemName: "swift")
                                         Text("GitHub")
@@ -197,7 +197,7 @@ struct LoginView: View {
                                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                     )
                                     .cornerRadius(8)
-                                }
+                                })
                             }
                         }
                         

@@ -18,7 +18,9 @@ class SupabaseAuthService: ObservableObject {
     
     init() {
         // Use configuration from SupabaseConfig
-        let supabaseURL = URL(string: SupabaseConfig.supabaseURL)!
+        guard let supabaseURL = URL(string: SupabaseConfig.supabaseURL) else {
+            fatalError("Invalid Supabase URL configuration")
+        }
         let supabaseKey = SupabaseConfig.supabaseAnonKey
         
         self.supabase = SupabaseClient(

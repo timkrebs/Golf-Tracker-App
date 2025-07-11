@@ -149,9 +149,26 @@ class GolfCourseAPIService: ObservableObject {
         
         do {
             let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+            let searchURLs = generateSearchURLs(for: encodedQuery)
             
-            // Try different possible API endpoints
-            let possibleURLs = [
+            if let courses = try await trySearchEndpoints(searchURLs) {
+                searchResults = courses
+                isSearching = false
+                return
+            }
+            
+            throw APIError.invalidURL
+            
+        } catch {
+            searchError = "Fehler bei der Suche: \(error.localizedDescription)"
+            searchResults = []
+        }
+        
+        isSearching = false
+    }
+    
+    private func generateSearchURLs(for encodedQuery: String) -> [String] {
+        return [
                 "\(baseURL)/api/v1/golf-courses/search?q=\(encodedQuery)&limit=20",
                 "\(baseURL)/golf-courses/search?q=\(encodedQuery)&limit=20",
                 "\(baseURL)/api/golf-courses/search?q=\(encodedQuery)&limit=20",
@@ -159,12 +176,30 @@ class GolfCourseAPIService: ObservableObject {
                 "\(baseURL)/api/courses/search?q=\(encodedQuery)&limit=20",
                 "\(baseURL)/search?q=\(encodedQuery)&limit=20"
             ]
+    }
             
+    private func trySearchEndpoints(_ urls: [String]) async throws -> [CourseSearchResult]? {
             var lastError: Error?
             
-            for urlString in possibleURLs {
+        for urlString in urls {
                 do {
-                    guard let url = URL(string: urlString) else { continue }
+                if let courses = try await performSearchRequest(urlString) {
+                    return courses
+                }
+            } catch {
+                print("❌ Network error for \(urlString): \(error)")
+                lastError = error
+            }
+        }
+        
+        if let error = lastError {
+            throw error
+        }
+        return nil
+    }
+    
+    private func performSearchRequest(_ urlString: String) async throws -> [CourseSearchResult]? {
+        guard let url = URL(string: urlString) else { return nil }
                     
                     var request = URLRequest(url: url)
                     request.httpMethod = "GET"
@@ -176,18 +211,17 @@ class GolfCourseAPIService: ObservableObject {
                     let (data, response) = try await session.data(for: request)
                     
                     guard let httpResponse = response as? HTTPURLResponse else {
-                        continue
+            return nil
                     }
                     
                     print("📡 Response Status: \(httpResponse.statusCode)")
                     
                     if httpResponse.statusCode == 404 {
-                        continue // Try next URL
+            return nil // Try next URL
                     }
                     
                     guard 200...299 ~= httpResponse.statusCode else {
-                        lastError = APIError.serverError(httpResponse.statusCode)
-                        continue
+            throw APIError.serverError(httpResponse.statusCode)
                     }
                     
                     // Log response for debugging
@@ -195,52 +229,29 @@ class GolfCourseAPIService: ObservableObject {
                         print("📄 Response: \(responseString.prefix(200))...")
                     }
                     
-                    // Try to decode the response - multiple formats
+        return try decodeSearchResponse(from: data)
+    }
+    
+    private func decodeSearchResponse(from data: Data) throws -> [CourseSearchResult] {
+        // Try primary format
                     do {
                         let searchResponse = try JSONDecoder().decode(GolfCourseSearchResponse.self, from: data)
-                        searchResults = searchResponse.courses
-                        isSearching = false
-                        return // Success!
+            return searchResponse.courses
                     } catch {
                         print("❌ Primary decoding failed: \(error)")
                         
                         // Try alternative response format with "data" field
                         do {
                             let altResponse = try JSONDecoder().decode(AlternativeSearchResponse.self, from: data)
-                            searchResults = altResponse.data
-                            isSearching = false
-                            return // Success!
+                return altResponse.data
                         } catch {
                             print("❌ Alternative 'data' decoding failed: \(error)")
                             
                             // Try direct array of courses
-                            do {
                                 let courses = try JSONDecoder().decode([CourseSearchResult].self, from: data)
-                                searchResults = courses
-                                isSearching = false
-                                return // Success!
-                            } catch {
-                                print("❌ Direct array decoding failed: \(error)")
-                                lastError = error
-                            }
-                        }
-                    }
-                    
-                } catch {
-                    print("❌ Network error for \(urlString): \(error)")
-                    lastError = error
+                return courses
                 }
             }
-            
-            // If we get here, all URLs failed
-            throw lastError ?? APIError.invalidURL
-            
-        } catch {
-            searchError = "Fehler bei der Suche: \(error.localizedDescription)"
-            searchResults = []
-        }
-        
-        isSearching = false
     }
     
     // MARK: - Get Golf Course Details
@@ -303,73 +314,12 @@ class GolfCourseAPIService: ObservableObject {
         searchError = nil
         
         do {
-            // Try different possible endpoints for getting all courses
-            let possibleURLs = [
-                "\(baseURL)/api/v1/golf-courses?limit=20",
-                "\(baseURL)/golf-courses?limit=20",
-                "\(baseURL)/api/golf-courses?limit=20",
-                "\(baseURL)/courses?limit=20",
-                "\(baseURL)/api/courses?limit=20"
-            ]
+            let courseURLs = generateCourseListURLs()
             
-            var lastError: Error?
-            
-            for urlString in possibleURLs {
-                do {
-                    guard let url = URL(string: urlString) else { continue }
-                    
-                    var request = URLRequest(url: url)
-                    request.httpMethod = "GET"
-                    request.setValue("application/json", forHTTPHeaderField: "Accept")
-                    
-                    print("🔍 Loading all courses from: \(urlString)")
-                    
-                    let (data, response) = try await session.data(for: request)
-                    
-                    guard let httpResponse = response as? HTTPURLResponse else {
-                        continue
-                    }
-                    
-                    print("📡 Response Status: \(httpResponse.statusCode)")
-                    
-                    if httpResponse.statusCode == 404 {
-                        continue // Try next URL
-                    }
-                    
-                    guard 200...299 ~= httpResponse.statusCode else {
-                        lastError = APIError.serverError(httpResponse.statusCode)
-                        continue
-                    }
-                    
-                    // Try to decode response
-                    do {
-                        let searchResponse = try JSONDecoder().decode(GolfCourseSearchResponse.self, from: data)
-                        allCourses = searchResponse.courses
-                        isLoadingAll = false
-                        return // Success!
-                    } catch {
-                        // Try alternative formats
-                        do {
-                            let altResponse = try JSONDecoder().decode(AlternativeSearchResponse.self, from: data)
-                            allCourses = altResponse.data
-                            isLoadingAll = false
-                            return // Success!
-                        } catch {
-                            do {
-                                let courses = try JSONDecoder().decode([CourseSearchResult].self, from: data)
-                                allCourses = courses
-                                isLoadingAll = false
-                                return // Success!
-                            } catch {
-                                lastError = error
-                            }
-                        }
-                    }
-                    
-                } catch {
-                    print("❌ Network error for \(urlString): \(error)")
-                    lastError = error
-                }
+            if let courses = try await tryLoadFromEndpoints(courseURLs) {
+                allCourses = courses
+                isLoadingAll = false
+                return
             }
             
             // If API fails, load mock data
@@ -381,6 +331,81 @@ class GolfCourseAPIService: ObservableObject {
         }
         
         isLoadingAll = false
+    }
+    
+    private func generateCourseListURLs() -> [String] {
+        return [
+                "\(baseURL)/api/v1/golf-courses?limit=20",
+                "\(baseURL)/golf-courses?limit=20",
+                "\(baseURL)/api/golf-courses?limit=20",
+                "\(baseURL)/courses?limit=20",
+                "\(baseURL)/api/courses?limit=20"
+            ]
+    }
+            
+    private func tryLoadFromEndpoints(_ urls: [String]) async throws -> [CourseSearchResult]? {
+            var lastError: Error?
+            
+        for urlString in urls {
+                do {
+                if let courses = try await performLoadRequest(urlString) {
+                    return courses
+                }
+            } catch {
+                print("❌ Network error for \(urlString): \(error)")
+                lastError = error
+            }
+        }
+        
+        if let error = lastError {
+            throw error
+        }
+        return nil
+    }
+    
+    private func performLoadRequest(_ urlString: String) async throws -> [CourseSearchResult]? {
+        guard let url = URL(string: urlString) else { return nil }
+                    
+                    var request = URLRequest(url: url)
+                    request.httpMethod = "GET"
+                    request.setValue("application/json", forHTTPHeaderField: "Accept")
+                    
+                    print("🔍 Loading all courses from: \(urlString)")
+                    
+                    let (data, response) = try await session.data(for: request)
+                    
+                    guard let httpResponse = response as? HTTPURLResponse else {
+            return nil
+                    }
+                    
+                    print("📡 Response Status: \(httpResponse.statusCode)")
+                    
+                    if httpResponse.statusCode == 404 {
+            return nil // Try next URL
+                    }
+                    
+                    guard 200...299 ~= httpResponse.statusCode else {
+            throw APIError.serverError(httpResponse.statusCode)
+                    }
+                    
+                    // Try to decode response
+        return try decodeLoadResponse(from: data)
+    }
+    
+    private func decodeLoadResponse(from data: Data) throws -> [CourseSearchResult] {
+                    do {
+                        let searchResponse = try JSONDecoder().decode(GolfCourseSearchResponse.self, from: data)
+            return searchResponse.courses
+                    } catch {
+                        // Try alternative formats
+                        do {
+                            let altResponse = try JSONDecoder().decode(AlternativeSearchResponse.self, from: data)
+                return altResponse.data
+                        } catch {
+                                let courses = try JSONDecoder().decode([CourseSearchResult].self, from: data)
+                return courses
+            }
+        }
     }
     
     // MARK: - Create New Course
@@ -399,8 +424,8 @@ class GolfCourseAPIService: ObservableObject {
             // Add to local list immediately for better UX
             allCourses.insert(newCourse, at: 0)
             
-            // TODO: Implement API creation when endpoint is available
-            // For now, just return the mock course
+            // NOTE: API course creation endpoint not yet available
+            // Using local storage for now, will sync when API is ready
             return newCourse
             
         } catch {

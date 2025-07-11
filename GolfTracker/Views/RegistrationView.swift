@@ -137,10 +137,10 @@ struct RegistrationView: View {
                                             .font(.system(size: 15))
                                     }
                                     
-                                    Button(action: { showPassword.toggle() }) {
+                                    Button(action: { showPassword.toggle() }, label: {
                                         Image(systemName: showPassword ? "eye.slash" : "eye")
                                             .foregroundColor(.gray)
-                                    }
+                                    })
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
@@ -154,7 +154,7 @@ struct RegistrationView: View {
                             Task {
                                 await signUp()
                             }
-                        }) {
+                        }, label: {
                             HStack {
                                 if authService.isLoading {
                                     ProgressView()
@@ -169,7 +169,7 @@ struct RegistrationView: View {
                             .frame(height: 44)
                             .background(Color(red: 0.2, green: 0.8, blue: 0.4))
                             .cornerRadius(10)
-                        }
+                        })
                         .disabled(authService.isLoading || name.isEmpty || email.isEmpty || password.count < 6)
                         
                         // OAuth Divider
@@ -185,7 +185,7 @@ struct RegistrationView: View {
                                     Task {
                                         await authService.signInWithGoogle()
                                     }
-                                }) {
+                                }, label: {
                                     HStack {
                                         Image(systemName: "globe")
                                         Text("Google")
@@ -200,14 +200,14 @@ struct RegistrationView: View {
                                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                     )
                                     .cornerRadius(8)
-                                }
+                                })
                                 
                                 // GitHub Sign Up
                                 Button(action: {
                                     Task {
                                         await authService.signInWithGitHub()
                                     }
-                                }) {
+                                }, label: {
                                     HStack {
                                         Image(systemName: "swift")
                                         Text("GitHub")
@@ -222,7 +222,7 @@ struct RegistrationView: View {
                                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                     )
                                     .cornerRadius(8)
-                                }
+                                })
                             }
                         }
                         

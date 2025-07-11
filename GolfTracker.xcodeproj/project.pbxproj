@@ -15,11 +15,35 @@
 		EECF9A122E1F9B8100C6AE7D /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = EECF9A112E1F9B8100C6AE7D /* Supabase */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		EEAEB9452E2115B600C74910 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EECF99DE2E1F97AE00C6AE7D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EECF99E52E1F97AE00C6AE7D;
+			remoteInfo = GolfTracker;
+		};
+		EEAEB9542E2115DF00C74910 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EECF99DE2E1F97AE00C6AE7D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EECF99E52E1F97AE00C6AE7D;
+			remoteInfo = GolfTracker;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		EEAEB9412E2115B600C74910 /* GolfTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEAEB94E2E2115DF00C74910 /* GolfTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GolfTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EECF99E62E1F97AE00C6AE7D /* GolfTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GolfTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		EEAEB9422E2115B600C74910 /* GolfTrackerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = GolfTrackerTests;
+			sourceTree = "<group>";
+		};
 		EECF99E82E1F97AE00C6AE7D /* GolfTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = GolfTracker;
@@ -28,6 +52,20 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		EEAEB93E2E2115B600C74910 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EEAEB94B2E2115DF00C74910 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EECF99E32E1F97AE00C6AE7D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -48,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				EECF99E82E1F97AE00C6AE7D /* GolfTracker */,
+				EEAEB9422E2115B600C74910 /* GolfTrackerTests */,
 				EECF99E72E1F97AE00C6AE7D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				EECF99E62E1F97AE00C6AE7D /* GolfTracker.app */,
+				EEAEB9412E2115B600C74910 /* GolfTrackerTests.xctest */,
+				EEAEB94E2E2115DF00C74910 /* GolfTrackerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -63,6 +104,49 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		EEAEB9402E2115B600C74910 /* GolfTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EEAEB9492E2115B600C74910 /* Build configuration list for PBXNativeTarget "GolfTrackerTests" */;
+			buildPhases = (
+				EEAEB93D2E2115B600C74910 /* Sources */,
+				EEAEB93E2E2115B600C74910 /* Frameworks */,
+				EEAEB93F2E2115B600C74910 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EEAEB9462E2115B600C74910 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				EEAEB9422E2115B600C74910 /* GolfTrackerTests */,
+			);
+			name = GolfTrackerTests;
+			packageProductDependencies = (
+			);
+			productName = GolfTrackerTests;
+			productReference = EEAEB9412E2115B600C74910 /* GolfTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EEAEB94D2E2115DF00C74910 /* GolfTrackerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EEAEB9562E2115DF00C74910 /* Build configuration list for PBXNativeTarget "GolfTrackerUITests" */;
+			buildPhases = (
+				EEAEB94A2E2115DF00C74910 /* Sources */,
+				EEAEB94B2E2115DF00C74910 /* Frameworks */,
+				EEAEB94C2E2115DF00C74910 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EEAEB9552E2115DF00C74910 /* PBXTargetDependency */,
+			);
+			name = GolfTrackerUITests;
+			packageProductDependencies = (
+			);
+			productName = GolfTrackerUITests;
+			productReference = EEAEB94E2E2115DF00C74910 /* GolfTrackerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		EECF99E52E1F97AE00C6AE7D /* GolfTracker */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EECF99F12E1F97AF00C6AE7D /* Build configuration list for PBXNativeTarget "GolfTracker" */;
@@ -101,6 +185,14 @@
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					EEAEB9402E2115B600C74910 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = EECF99E52E1F97AE00C6AE7D;
+					};
+					EEAEB94D2E2115DF00C74910 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = EECF99E52E1F97AE00C6AE7D;
+					};
 					EECF99E52E1F97AE00C6AE7D = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -124,11 +216,27 @@
 			projectRoot = "";
 			targets = (
 				EECF99E52E1F97AE00C6AE7D /* GolfTracker */,
+				EEAEB9402E2115B600C74910 /* GolfTrackerTests */,
+				EEAEB94D2E2115DF00C74910 /* GolfTrackerUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		EEAEB93F2E2115B600C74910 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EEAEB94C2E2115DF00C74910 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EECF99E42E1F97AE00C6AE7D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -139,6 +247,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		EEAEB93D2E2115B600C74910 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EEAEB94A2E2115DF00C74910 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EECF99E22E1F97AE00C6AE7D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,7 +270,90 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		EEAEB9462E2115B600C74910 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EECF99E52E1F97AE00C6AE7D /* GolfTracker */;
+			targetProxy = EEAEB9452E2115B600C74910 /* PBXContainerItemProxy */;
+		};
+		EEAEB9552E2115DF00C74910 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EECF99E52E1F97AE00C6AE7D /* GolfTracker */;
+			targetProxy = EEAEB9542E2115DF00C74910 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		EEAEB9472E2115B600C74910 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M77SKHKG63;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = timkrebs.GolfTrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GolfTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GolfTracker";
+			};
+			name = Debug;
+		};
+		EEAEB9482E2115B600C74910 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M77SKHKG63;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = timkrebs.GolfTrackerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GolfTracker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GolfTracker";
+			};
+			name = Release;
+		};
+		EEAEB9572E2115DF00C74910 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M77SKHKG63;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = timkrebs.GolfTrackerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GolfTracker;
+			};
+			name = Debug;
+		};
+		EEAEB9582E2115DF00C74910 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M77SKHKG63;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = timkrebs.GolfTrackerUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GolfTracker;
+			};
+			name = Release;
+		};
 		EECF99EF2E1F97AF00C6AE7D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -202,7 +407,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -260,7 +465,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -329,6 +534,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		EEAEB9492E2115B600C74910 /* Build configuration list for PBXNativeTarget "GolfTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EEAEB9472E2115B600C74910 /* Debug */,
+				EEAEB9482E2115B600C74910 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EEAEB9562E2115DF00C74910 /* Build configuration list for PBXNativeTarget "GolfTrackerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EEAEB9572E2115DF00C74910 /* Debug */,
+				EEAEB9582E2115DF00C74910 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EECF99E12E1F97AE00C6AE7D /* Build configuration list for PBXProject "GolfTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

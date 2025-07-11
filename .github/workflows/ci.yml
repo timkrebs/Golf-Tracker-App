@@ -7,14 +7,14 @@ on:
     branches: [ main, develop ]
 
 env:
-  XCODE_VERSION: '15.2'
-  IOS_SIMULATOR_DEVICE: 'iPhone 15'
-  IOS_SIMULATOR_OS: '17.2'
+  XCODE_VERSION: '16.1'
+  IOS_SIMULATOR_DEVICE: 'iPhone 16 Pro'
+  IOS_SIMULATOR_OS: '18.1'
 
 jobs:
   test:
     name: Run Tests
-    runs-on: macos-14
+    runs-on: macos-15
     
     steps:
     - name: Checkout Repository
@@ -25,13 +25,18 @@ jobs:
       with:
         xcode-version: ${{ env.XCODE_VERSION }}
         
+    - name: List Available Simulators
+      run: |
+        xcrun simctl list devices available
+        
     - name: Cache Swift Package Manager
       uses: actions/cache@v4
       with:
         path: |
           .build
           DerivedData
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved', '**/Package.swift') }}
         restore-keys: |
           ${{ runner.os }}-spm-
           
@@ -57,22 +62,24 @@ jobs:
         
     - name: Resolve Swift Package Dependencies
       run: |
-        xcodebuild -resolvePackageDependencies -project GolfTracker.xcodeproj
+        xcodebuild -resolvePackageDependencies -project GolfTracker.xcodeproj -verbose
         
-    - name: Build for Testing
+    - name: Build for Testing (Unit Tests Only)
       run: |
         xcodebuild clean build-for-testing \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
           -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_DEVICE }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+          -only-testing:GolfTrackerTests \
           -derivedDataPath DerivedData
           
-    - name: Run Unit Tests
+    - name: Run Unit Tests Only
       run: |
         xcodebuild test-without-building \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
           -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_DEVICE }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+          -only-testing:GolfTrackerTests \
           -derivedDataPath DerivedData \
           -resultBundlePath TestResults.xcresult
           
@@ -84,8 +91,8 @@ jobs:
         path: TestResults.xcresult
 
   build:
-    name: Build App
-    runs-on: macos-14
+    name: Build Verification
+    runs-on: macos-15
     needs: test
     
     steps:
@@ -103,7 +110,8 @@ jobs:
         path: |
           .build
           DerivedData
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved', '**/Package.swift') }}
         restore-keys: |
           ${{ runner.os }}-spm-
           
@@ -127,24 +135,24 @@ jobs:
         </plist>
         EOF
         
-    - name: Build Archive
+    - name: Build for iOS Simulator (No Signing Required)
       run: |
-        xcodebuild clean archive \
+        xcodebuild clean build \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
-          -destination "generic/platform=iOS" \
-          -archivePath "GolfTracker.xcarchive" \
+          -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_DEVICE }},OS=${{ env.IOS_SIMULATOR_OS }}" \
           -derivedDataPath DerivedData
           
-    - name: Upload Build Artifact
+    - name: Upload Build Logs
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: golf-tracker-archive
-        path: GolfTracker.xcarchive
+        name: build-logs
+        path: DerivedData/Logs
 
   lint:
     name: SwiftLint
-    runs-on: macos-14
+    runs-on: macos-15
     
     steps:
     - name: Checkout Repository

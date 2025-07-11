@@ -32,9 +32,9 @@ struct SplashScreenView: View {
             
             // Subtle pattern overlay
             VStack {
-                ForEach(0..<8, id: \.self) { row in
+                ForEach(0..<8, id: \.self) { _ in
                     HStack {
-                        ForEach(0..<6, id: \.self) { col in
+                        ForEach(0..<6, id: \.self) { _ in
                             Circle()
                                 .fill(Color.white.opacity(0.03))
                                 .frame(width: 4, height: 4)

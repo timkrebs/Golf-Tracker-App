@@ -11,7 +11,7 @@ import Foundation
 
 class InProgressRound: ObservableObject {
     @Published var courseName: String = ""
-    @Published var courseId: Int? = nil
+    @Published var courseId: Int?
     @Published var courseLocation: String = ""
     @Published var numberOfHoles: Int = 18 {
         didSet {
@@ -29,7 +29,7 @@ class InProgressRound: ObservableObject {
     @Published var holes: [InProgressHoleScore] = []
     @Published var notes: String = ""
     @Published var isCompleted: Bool = false
-    @Published var apiScorecard: APIScorecard? = nil
+    @Published var apiScorecard: APIScorecard?
     
     var totalPar: Int {
         holes.reduce(0) { $0 + $1.par }
@@ -59,25 +59,25 @@ class InProgressRound: ObservableObject {
     
     private func setupHoles() {
         holes = []
-        for i in 1...numberOfHoles {
+        for holeIndex in 1...numberOfHoles {
             // Default par based on typical golf course layout
             let defaultPar: Int
             if numberOfHoles == 9 {
                 // 9-hole course: mix of par 3, 4, 5
-                defaultPar = [3, 4, 5, 4, 3, 4, 5, 4, 3][i-1]
+                defaultPar = [3, 4, 5, 4, 3, 4, 5, 4, 3][holeIndex-1]
             } else {
                 // 18-hole course: typical layout
-                defaultPar = [4, 4, 3, 5, 4, 4, 3, 4, 5, 4, 4, 3, 5, 4, 4, 3, 4, 5][i-1]
+                defaultPar = [4, 4, 3, 5, 4, 4, 3, 4, 5, 4, 4, 3, 5, 4, 4, 3, 4, 5][holeIndex-1]
             }
             
             holes.append(InProgressHoleScore(
-                holeNumber: i,
+                holeNumber: holeIndex,
                 par: defaultPar
             ))
         }
     }
     
-    func updateHoleScore(holeNumber: Int, strokes: Int, putts: Int?, fairwayHit: Bool?, greenInRegulation: Bool?) {
+    func updateHoleScore(holeNumber: Int, strokes: Int?, putts: Int?, fairwayHit: Bool?, greenInRegulation: Bool?) {
         guard let index = holes.firstIndex(where: { $0.holeNumber == holeNumber }) else { return }
         
         holes[index].strokes = strokes

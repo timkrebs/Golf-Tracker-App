@@ -7,6 +7,197 @@
 
 import SwiftUI
 
+// MARK: - Settings Components
+
+struct SettingsHeaderView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 50, height: 50)
+                
+                Image(systemName: "flag.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
+            }
+            
+            VStack(spacing: 2) {
+                Text("Einstellungen")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Text("Verwalten Sie Ihr Profil und Ihre Daten")
+                    .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.9))
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(.top, 5)
+    }
+}
+
+struct ProfileSectionView: View {
+    @Binding var userName: String
+    let userEmail: String
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "person.circle.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
+                Text("Profil")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Name")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black)
+                
+                HStack {
+                    Image(systemName: "person")
+                        .foregroundColor(.gray)
+                        .frame(width: 16)
+                        .font(.system(size: 14))
+                    
+                    TextField("Ihr Name", text: $userName)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .font(.system(size: 14))
+                        .autocapitalization(.words)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            hideKeyboard()
+                        }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("E-Mail")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black)
+                
+                HStack {
+                    Image(systemName: "envelope")
+                        .foregroundColor(.gray)
+                        .frame(width: 16)
+                        .font(.system(size: 14))
+                    
+                    Text(userEmail)
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Color.gray.opacity(0.05))
+                .cornerRadius(8)
+            }
+        }
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+struct GolfDataSectionView: View {
+    @Binding var handicap: String
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "sportscourt.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
+                Text("Golf Daten")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                Spacer()
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Handicap")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black)
+                
+                HStack {
+                    Image(systemName: "target")
+                        .foregroundColor(.gray)
+                        .frame(width: 16)
+                        .font(.system(size: 14))
+                    
+                    TextField("z.B. 18.5", text: $handicap)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .font(.system(size: 14))
+                        .keyboardType(.decimalPad)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button("Fertig") {
+                                    hideKeyboard()
+                                }
+                                .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
+                            }
+                        }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                
+                Text("Ihr aktuelles Golf-Handicap (optional)")
+                    .font(.system(size: 11))
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+struct AccountSectionView: View {
+    let logoutAction: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(.gray)
+                Text("Konto")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.black)
+                Spacer()
+            }
+            
+            Button(action: logoutAction, label: {
+                HStack {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: 14))
+                    Text("Abmelden")
+                        .font(.system(size: 14, weight: .medium))
+                }
+                .foregroundColor(.red)
+                .frame(maxWidth: .infinity)
+                .frame(height: 40)
+                .background(Color.red.opacity(0.1))
+                .cornerRadius(8)
+            })
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject private var authService: SupabaseAuthService
     @EnvironmentObject private var dataService: SupabaseDataService
@@ -42,44 +233,21 @@ struct SettingsView: View {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                     dismiss()
                                 }
-                            }) {
+                            }, label: {
                                 Image(systemName: "xmark")
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.white)
                                     .padding(10)
                                     .background(Color.white.opacity(0.2))
                                     .cornerRadius(10)
-                            }
+                            })
                             Spacer()
                         }
                         .padding(.horizontal, 18)
                         .padding(.top, 5)
                         
-                        // Header Section (kompakter)
-                        VStack(spacing: 12) {
-                            // Golf Flag Icon (kleiner)
-                            ZStack {
-                                Circle()
-                                    .fill(Color.white)
-                                    .frame(width: 50, height: 50)
-                                
-                                Image(systemName: "flag.fill")
-                                    .font(.system(size: 20))
-                                    .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
-                            }
-                            
-                            VStack(spacing: 2) {
-                                Text("Einstellungen")
-                                    .font(.system(size: 24, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                Text("Verwalten Sie Ihr Profil und Ihre Daten")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.white.opacity(0.9))
-                                    .multilineTextAlignment(.center)
-                            }
-                        }
-                        .padding(.top, 5)
+                        // Header Section
+                        SettingsHeaderView()
                         
                         // Fixed height container for Success/Error Messages (kompakter)
                         VStack {
@@ -124,120 +292,16 @@ struct SettingsView: View {
                         // Settings Form Card (kompakter)
                         VStack(spacing: 16) {
                             // Profile Section
-                            VStack(spacing: 12) {
-                                HStack {
-                                    Image(systemName: "person.circle.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
-                                    Text("Profil")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.black)
-                                    Spacer()
-                                }
-                                
-                                // Name Field
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Name")
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.black)
-                                    
-                                    HStack {
-                                        Image(systemName: "person")
-                                            .foregroundColor(.gray)
-                                            .frame(width: 16)
-                                            .font(.system(size: 14))
-                                        
-                                        TextField("Ihr Name", text: $userName)
-                                            .textFieldStyle(PlainTextFieldStyle())
-                                            .font(.system(size: 14))
-                                            .autocapitalization(.words)
-                                            .submitLabel(.done)
-                                            .onSubmit {
-                                                hideKeyboard()
-                                            }
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 8)
-                                    .background(Color.gray.opacity(0.1))
-                                    .cornerRadius(8)
-                                }
-                                
-                                // Email Display (read-only)
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("E-Mail")
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.black)
-                                    
-                                    HStack {
-                                        Image(systemName: "envelope")
-                                            .foregroundColor(.gray)
-                                            .frame(width: 16)
-                                            .font(.system(size: 14))
-                                        
-                                        Text(authService.session?.user.email ?? "")
-                                            .font(.system(size: 14))
-                                            .foregroundColor(.gray)
-                                        
-                                        Spacer()
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 8)
-                                    .background(Color.gray.opacity(0.05))
-                                    .cornerRadius(8)
-                                }
-                            }
+                            ProfileSectionView(
+                                userName: $userName,
+                                userEmail: authService.session?.user.email ?? ""
+                            )
                             
                             Divider()
                                 .background(Color.gray.opacity(0.3))
                             
                             // Golf Section
-                            VStack(spacing: 12) {
-                                HStack {
-                                    Image(systemName: "sportscourt.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
-                                    Text("Golf Daten")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.black)
-                                    Spacer()
-                                }
-                                
-                                // Handicap Field
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Handicap")
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.black)
-                                    
-                                    HStack {
-                                        Image(systemName: "target")
-                                            .foregroundColor(.gray)
-                                            .frame(width: 16)
-                                            .font(.system(size: 14))
-                                        
-                                        TextField("z.B. 18.5", text: $handicap)
-                                            .textFieldStyle(PlainTextFieldStyle())
-                                            .font(.system(size: 14))
-                                            .keyboardType(.decimalPad)
-                                            .toolbar {
-                                                ToolbarItemGroup(placement: .keyboard) {
-                                                    Spacer()
-                                                    Button("Fertig") {
-                                                        hideKeyboard()
-                                                    }
-                                                    .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
-                                                }
-                                            }
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 8)
-                                    .background(Color.gray.opacity(0.1))
-                                    .cornerRadius(8)
-                                    
-                                    Text("Ihr aktuelles Golf-Handicap (optional)")
-                                        .font(.system(size: 11))
-                                        .foregroundColor(.gray)
-                                }
-                            }
+                            GolfDataSectionView(handicap: $handicap)
                             
                             // Save Button
                             Button(action: {
@@ -245,7 +309,7 @@ struct SettingsView: View {
                                 Task {
                                     await saveSettings()
                                 }
-                            }) {
+                            }, label: {
                                 HStack {
                                     if isLoading {
                                         ProgressView()
@@ -260,42 +324,17 @@ struct SettingsView: View {
                                 .frame(height: 40)
                                 .background(Color(red: 0.2, green: 0.8, blue: 0.4))
                                 .cornerRadius(8)
-                            }
+                            })
                             .disabled(isLoading)
                             
                             Divider()
                                 .background(Color.gray.opacity(0.3))
                             
                             // Account Section
-                            VStack(spacing: 12) {
-                                HStack {
-                                    Image(systemName: "gearshape.fill")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.gray)
-                                    Text("Konto")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.black)
-                                    Spacer()
-                                }
-                                
-                                // Logout Button
-                                Button(action: {
+                            AccountSectionView {
                                     hideKeyboard()
                                     Task {
                                         await logout()
-                                    }
-                                }) {
-                                    HStack {
-                                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                                            .font(.system(size: 14))
-                                        Text("Abmelden")
-                                            .font(.system(size: 14, weight: .medium))
-                                    }
-                                    .foregroundColor(.red)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 40)
-                                    .background(Color.red.opacity(0.1))
-                                    .cornerRadius(8)
                                 }
                             }
                         }
@@ -333,7 +372,7 @@ struct SettingsView: View {
         
         // Load current handicap from stats
         if let stats = dataService.dashboardData.userStats {
-            handicap = stats.handicapIndex != nil ? String(format: "%.1f", stats.handicapIndex!) : ""
+            handicap = stats.handicapIndex.map { String(format: "%.1f", $0) } ?? ""
         }
     }
     

@@ -34,14 +34,14 @@ struct RoundHistoryView: View {
                     HStack {
                         Button(action: {
                             dismiss()
-                        }) {
+                        }, label: {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.white)
                                 .padding(12)
                                 .background(Color.white.opacity(0.2))
                                 .cornerRadius(10)
-                        }
+                        })
                         
                         Spacer()
                         
@@ -173,6 +173,12 @@ struct RoundHistoryView: View {
     }
 }
 
+struct TrendIndicator {
+    let icon: String
+    let color: Color
+    let text: String
+}
+
 struct StatisticsSection: View {
     let rounds: [GolfRound]
     
@@ -194,27 +200,27 @@ struct StatisticsSection: View {
         recentRounds.map { $0.totalScore }.min()
     }
     
-    private var trendIndicator: (icon: String, color: Color, text: String) {
+    private var trendIndicator: TrendIndicator {
         if rounds.count < 2 {
-            return ("minus", .gray, "Keine Tendenz")
+            return TrendIndicator(icon: "minus", color: .gray, text: "Keine Tendenz")
         }
         
         let recent5 = Array(rounds.prefix(5))
         let previous5 = Array(rounds.dropFirst(5).prefix(5))
         
         guard !previous5.isEmpty else {
-            return ("minus", .gray, "Keine Tendenz")
+            return TrendIndicator(icon: "minus", color: .gray, text: "Keine Tendenz")
         }
         
         let recentAvg = Double(recent5.map { $0.totalScore }.reduce(0, +)) / Double(recent5.count)
         let previousAvg = Double(previous5.map { $0.totalScore }.reduce(0, +)) / Double(previous5.count)
         
         if recentAvg < previousAvg - 1 {
-            return ("arrow.up", .green, "Verbesserung")
+            return TrendIndicator(icon: "arrow.up", color: .green, text: "Verbesserung")
         } else if recentAvg > previousAvg + 1 {
-            return ("arrow.down", .red, "Verschlechterung")
+            return TrendIndicator(icon: "arrow.down", color: .red, text: "Verschlechterung")
         } else {
-            return ("minus", .orange, "Konstant")
+            return TrendIndicator(icon: "minus", color: .orange, text: "Konstant")
         }
     }
     
@@ -239,7 +245,7 @@ struct StatisticsSection: View {
             
             StatCard(
                 title: "Bester Score",
-                value: bestRecentScore != nil ? "\(bestRecentScore!)" : "--",
+                value: bestRecentScore.map { "\($0)" } ?? "--",
                 icon: "star.fill",
                 color: .white
             )
@@ -280,10 +286,15 @@ struct RoundCard: View {
     
     private var scoreColor: Color {
         let relative = round.scoreRelativeToPar
-        if relative < 0 { return .green }
-        else if relative == 0 { return .blue }
-        else if relative <= 5 { return .orange }
-        else { return .red }
+        if relative < 0 { 
+            return .green 
+        } else if relative == 0 { 
+            return .blue 
+        } else if relative <= 5 { 
+            return .orange 
+        } else { 
+            return .red 
+        }
     }
     
     var body: some View {
