@@ -114,6 +114,16 @@ Die GitHub Actions Pipeline führt automatisch aus:
 1. In Xcode: File → New → Target → "UI Testing Bundle"
 2. Target Name: "GolfTrackerUITests"
 
+### Testing locally: 
+- Run Tests
+```bash
+xcodebuild test -project GolfTracker.xcodeproj -scheme GolfTracker -destination 'platform=iOS Simulator,name=iPhone 15'
+```
+- Run UI Tests
+```bash
+   xcodebuild test -project GolfTracker.xcodeproj -scheme GolfTracker -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:GolfTrackerUITests
+```
+
 ## 📁 Empfohlene Ordnerstruktur
 
 ```

@@ -8,8 +8,8 @@ on:
 
 env:
   XCODE_VERSION: '15.2'
-  IOS_SIMULATOR_DEVICE: 'iPhone 15'
-  IOS_SIMULATOR_OS: '17.2'
+  IOS_SIMULATOR_DEVICE: 'iPhone 16 Pro'
+  IOS_SIMULATOR_OS: '18.5'
 
 jobs:
   test:
