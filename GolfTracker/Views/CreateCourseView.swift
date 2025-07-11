@@ -144,7 +144,7 @@ struct CreateCourseView: View {
                                         ForEach([9, 18], id: \.self) { holes in
                                             Button(action: {
                                                 numberOfHoles = holes
-                                            }) {
+                                            }, label: {
                                                 VStack(spacing: 4) {
                                                     Text("\(holes)")
                                                         .font(.system(size: 20, weight: .bold))
@@ -158,7 +158,7 @@ struct CreateCourseView: View {
                                                 .frame(height: 60)
                                                 .background(numberOfHoles == holes ? Color(red: 0.2, green: 0.8, blue: 0.4) : Color.gray.opacity(0.1))
                                                 .cornerRadius(8)
-                                            }
+                                            })
                                         }
                                     }
                                 }

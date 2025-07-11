@@ -28,7 +28,7 @@ struct AuthenticationCoordinator: View {
                     .environmentObject(authService)
             }
         }
-        .onChange(of: authService.session) { oldValue, newValue in
+        .onChange(of: authService.session) { _, newValue in
             Task {
                 if newValue != nil {
                     await dataService.fetchDashboardData()

@@ -28,9 +28,13 @@ struct GolfRound: Identifiable, Codable {
     
     var scoreDescription: String {
         let relative = scoreRelativeToPar
-        if relative == 0 { return "Par" }
-        else if relative > 0 { return "+\(relative)" }
-        else { return "\(relative)" }
+        if relative == 0 { 
+            return "Par" 
+        } else if relative > 0 { 
+            return "+\(relative)" 
+        } else { 
+            return "\(relative)" 
+        }
     }
     
     enum CodingKeys: String, CodingKey {

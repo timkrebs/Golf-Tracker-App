@@ -51,14 +51,14 @@ struct NewRoundView: View {
                     HStack {
                         Button(action: {
                             dismiss()
-                        }) {
+                        }, label: {
                             Image(systemName: "xmark")
                                 .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.white)
                                 .padding(12)
                                 .background(Color.white.opacity(0.2))
                                 .cornerRadius(10)
-                        }
+                        })
                         
                         Spacer()
                         
@@ -123,7 +123,7 @@ struct NewRoundView: View {
                             VStack(spacing: 12) {
                                 Button(action: {
                                     startRound()
-                                }) {
+                                }, label: {
                                     HStack {
                                         if isLoadingCourse {
                                             ProgressView()
@@ -142,7 +142,7 @@ struct NewRoundView: View {
                                     .frame(height: 56)
                                     .background(Color.white)
                                     .cornerRadius(16)
-                                }
+                                })
                                 .disabled(inProgressRound.courseName.isEmpty || isLoadingCourse)
                                 .opacity(inProgressRound.courseName.isEmpty || isLoadingCourse ? 0.6 : 1.0)
                                 
@@ -311,14 +311,13 @@ struct CourseListCard: View {
                                 Button(action: {
                                     selectedCourse = course
                                     courseName = course.name
-                                }) {
+                                }, label: {
                                     HStack {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(course.name)
                                                 .font(.system(size: 14, weight: .medium))
                                                 .foregroundColor(.black)
                                                 .multilineTextAlignment(.leading)
-                                            
                                             Text("\(course.location), \(course.country)")
                                                 .font(.system(size: 12))
                                                 .foregroundColor(.gray)
@@ -330,7 +329,6 @@ struct CourseListCard: View {
                                             Text("\(course.totalHoles)")
                                                 .font(.system(size: 14, weight: .bold))
                                                 .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
-                                            
                                             Text("Löcher")
                                                 .font(.system(size: 10))
                                                 .foregroundColor(.gray)
@@ -344,7 +342,7 @@ struct CourseListCard: View {
                                         RoundedRectangle(cornerRadius: 8)
                                             .stroke(selectedCourse?.id == course.id ? Color(red: 0.2, green: 0.8, blue: 0.4) : Color.clear, lineWidth: 2)
                                     )
-                                }
+                                })
                             }
                         }
                     }
@@ -406,7 +404,6 @@ struct CourseListCard: View {
                             .font(.system(size: 12))
                             .foregroundColor(.red)
                             .multilineTextAlignment(.center)
-                        
                         Button("Erneut versuchen") {
                             Task {
                                 await apiService.loadAllCourses()
@@ -451,12 +448,11 @@ struct HolesSelectionCard: View {
                 ForEach([9, 18], id: \.self) { holes in
                     Button(action: {
                         numberOfHoles = holes
-                    }) {
+                    }, label: {
                         VStack(spacing: 8) {
                             Text("\(holes)")
                                 .font(.system(size: 24, weight: .bold))
                                 .foregroundColor(numberOfHoles == holes ? .white : Color(red: 0.2, green: 0.8, blue: 0.4))
-                            
                             Text("Löcher")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(numberOfHoles == holes ? .white : .gray)
@@ -465,7 +461,7 @@ struct HolesSelectionCard: View {
                         .frame(height: 80)
                         .background(numberOfHoles == holes ? Color(red: 0.2, green: 0.8, blue: 0.4) : Color.gray.opacity(0.1))
                         .cornerRadius(12)
-                    }
+                    })
                 }
             }
         }

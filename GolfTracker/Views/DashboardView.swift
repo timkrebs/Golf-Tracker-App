@@ -35,14 +35,14 @@ struct DashboardView: View {
                             Spacer()
                             Button(action: {
                                 showingSettings = true
-                            }) {
+                            }, label: {
                                 Image(systemName: "gearshape.fill")
                                     .font(.system(size: 20))
                                     .foregroundColor(.white)
                                     .padding(12)
                                     .background(Color.white.opacity(0.2))
                                     .cornerRadius(12)
-                            }
+                            })
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
@@ -121,16 +121,26 @@ struct DashboardView: View {
                             
                             StatCard(
                                 title: "Handicap",
-                                value: dataService.dashboardData.userStats?.handicapIndex != nil ? 
-                                    String(format: "%.1f", dataService.dashboardData.userStats!.handicapIndex!) : "--",
+                                value: {
+                                    if let handicap = dataService.dashboardData.userStats?.handicapIndex {
+                                        return String(format: "%.1f", handicap)
+                                    } else {
+                                        return "--"
+                                    }
+                                }(),
                                 icon: "target",
                                 color: .white
                             )
                             
                             StatCard(
                                 title: "Beste Runde",
-                                value: dataService.dashboardData.userStats?.bestScore != nil ? 
-                                    "\(dataService.dashboardData.userStats!.bestScore!)" : "--",
+                                value: {
+                                    if let bestScore = dataService.dashboardData.userStats?.bestScore {
+                                        return "\(bestScore)"
+                                    } else {
+                                        return "--"
+                                    }
+                                }(),
                                 icon: "trophy.fill",
                                 color: .white
                             )
@@ -149,7 +159,7 @@ struct DashboardView: View {
                     VStack(spacing: 16) {
                         Button(action: {
                             showingNewRound = true
-                        }) {
+                        }, label: {
                             HStack {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.system(size: 20))
@@ -161,11 +171,11 @@ struct DashboardView: View {
                             .frame(height: 56)
                             .background(Color.white)
                             .cornerRadius(16)
-                        }
+                        })
                         
                         Button(action: {
                             showingRoundHistory = true
-                        }) {
+                        }, label: {
                             HStack {
                                 Image(systemName: "clock.fill")
                                     .font(.system(size: 20))
@@ -177,7 +187,7 @@ struct DashboardView: View {
                             .frame(height: 56)
                             .background(Color.white.opacity(0.2))
                             .cornerRadius(16)
-                        }
+                        })
                     }
                     .padding(.horizontal)
                     

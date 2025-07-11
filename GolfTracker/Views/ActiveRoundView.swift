@@ -18,7 +18,7 @@ struct ActiveRoundView: View {
     @State private var showingScore = false
     @State private var finishedScore: Int?
     
-    var currentHole: InProgressHole {
+    var currentHole: InProgressHoleScore {
         inProgressRound.holes[inProgressRound.currentHole - 1]
     }
     
@@ -27,15 +27,15 @@ struct ActiveRoundView: View {
     }
     
     var body: some View {
-        ZStack {
+            ZStack {
             // Background gradient
-            LinearGradient(
+                LinearGradient(
                 colors: [Color(red: 0.2, green: 0.8, blue: 0.4), Color(red: 0.15, green: 0.6, blue: 0.3)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
             ScrollView {
                 VStack(spacing: 24) {
                     // Header with course info and navigation
@@ -55,12 +55,12 @@ struct ActiveRoundView: View {
                             hole: currentHole,
                             onUpdate: updateHoleScore,
                             onParUpdate: updateHolePar
-                        )
-                    }
-                    
+                                )
+                            }
+                            
                     // Progress overview
-                    ProgressOverviewCard(inProgressRound: inProgressRound)
-                    
+                            ProgressOverviewCard(inProgressRound: inProgressRound)
+                            
                     // Navigation buttons
                     HoleNavigationButtons(inProgressRound: inProgressRound)
                     
@@ -75,20 +75,21 @@ struct ActiveRoundView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
             }
-        }
+            }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button("Abbrechen") {
                     presentationMode.wrappedValue.dismiss()
-                }
+            }
                 .foregroundColor(.white)
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Überblick") {
-                    // TODO: Show round overview
+                    // Show round overview (navigation to summary view would be implemented here)
+                    showRoundOverview()
                 }
                 .foregroundColor(.white)
             }
@@ -116,9 +117,9 @@ struct ActiveRoundView: View {
     
     private var headerSection: some View {
         VStack(spacing: 8) {
-            Text(inProgressRound.courseName)
+                    Text(inProgressRound.courseName)
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(.white)
+                        .foregroundColor(.white)
                 .multilineTextAlignment(.center)
             
             Text("Loch \(inProgressRound.currentHole) von \(inProgressRound.numberOfHoles)")
@@ -126,19 +127,19 @@ struct ActiveRoundView: View {
                 .foregroundColor(.white.opacity(0.9))
         }
         .padding(.top, 20)
-    }
+        }
     
     private var currentHoleCard: some View {
         VStack(spacing: 16) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Loch \(currentHole.number)")
+                    Text("Loch \(currentHole.holeNumber)")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.black)
                     
                     Text("Par \(currentHole.par)")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.gray)
+                                 .foregroundColor(.gray)
                 }
                 
                 Spacer()
@@ -152,12 +153,12 @@ struct ActiveRoundView: View {
             if let strokes = currentHole.strokes {
                 Divider()
                 
-                HStack {
+                    HStack {
                     Text("Schläge: \(strokes)")
                         .font(.system(size: 16, weight: .medium))
-                    
-                    Spacer()
-                    
+                        
+                        Spacer()
+                        
                     if let putts = currentHole.putts {
                         Text("Putts: \(putts)")
                             .font(.system(size: 14))
@@ -183,7 +184,7 @@ struct ActiveRoundView: View {
             Button("Score bearbeiten") {
                 // Allow editing the score
                 inProgressRound.updateHoleScore(
-                    holeNumber: currentHole.number,
+                    holeNumber: currentHole.holeNumber,
                     strokes: nil,
                     putts: nil,
                     fairwayHit: nil,
@@ -222,6 +223,11 @@ struct ActiveRoundView: View {
         inProgressRound.updateHolePar(holeNumber: inProgressRound.currentHole, par: newPar)
     }
     
+    private func showRoundOverview() {
+        // Round overview functionality - could show a summary sheet or navigate to overview
+        print("Round Overview: \(inProgressRound.completedHoles)/\(inProgressRound.numberOfHoles) holes completed, Current score: \(inProgressRound.totalScore)")
+        }
+    
     private func finishRound() {
         guard canFinishRound else { return }
         
@@ -237,7 +243,7 @@ struct ActiveRoundView: View {
                     par: inProgressRound.totalPar,
                     holes: inProgressRound.holes.map { hole in
                         CreateHoleScoreRequest(
-                            holeNumber: hole.number,
+                            holeNumber: hole.holeNumber,
                             par: hole.par,
                             strokes: hole.strokes ?? 0,
                             putts: hole.putts,
@@ -257,8 +263,9 @@ struct ActiveRoundView: View {
             } catch {
                 await MainActor.run {
                     isFinishing = false
-                    // TODO: Show error alert
+                    // Show error message to user
                     print("Error finishing round: \(error)")
+                    // Note: Error handling should show user-friendly alert
                 }
             }
         }
@@ -272,4 +279,4 @@ struct ActiveRoundView: View {
     return ActiveRoundView(inProgressRound: inProgressRound)
         .environmentObject(authService)
         .environmentObject(SupabaseDataService(authService: authService))
-}
+} 

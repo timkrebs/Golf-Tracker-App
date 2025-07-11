@@ -49,12 +49,27 @@ struct TestDataFactory {
         par: Int = 72,
         numberOfHoles: Int = 18
     ) -> GolfRound {
+        // Create holes with calculated strokes to match totalScore
+        var remainingStrokes = totalScore
         let holes = (1...numberOfHoles).map { holeNumber in
-            createTestHoleScore(
+            let parValue = holeNumber <= 4 ? 4 : (holeNumber <= 14 ? 3 : 5)
+            // For all but the last hole, use reasonable strokes
+            let strokes: Int
+            if holeNumber == numberOfHoles {
+                // Last hole gets remaining strokes
+                strokes = max(1, remainingStrokes)
+            } else {
+                // Use a reasonable stroke count (par +/- 2)
+                let targetStrokes = max(1, min(parValue + 2, remainingStrokes / (numberOfHoles - holeNumber + 1)))
+                strokes = targetStrokes
+                remainingStrokes -= strokes
+            }
+            
+            return createTestHoleScore(
                 roundId: id,
                 holeNumber: holeNumber,
-                par: holeNumber <= 4 ? 4 : (holeNumber <= 14 ? 3 : 5),
-                strokes: Int.random(in: 3...7)
+                par: parValue,
+                strokes: strokes
             )
         }
         

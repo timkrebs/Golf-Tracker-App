@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HoleScoreInput: View {
-    let hole: InProgressHole
+    let hole: InProgressHoleScore
     let onUpdate: (Int, Int?, Bool?, Bool?) -> Void
     let onParUpdate: (Int) -> Void
     
@@ -155,4 +155,4 @@ struct HoleScoreInput: View {
         
         onUpdate(strokeCount, puttCount, fairwayHit, greenInRegulation)
     }
-} 
+}

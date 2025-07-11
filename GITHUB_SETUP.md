@@ -117,11 +117,11 @@ Die GitHub Actions Pipeline führt automatisch aus:
 ### Testing locally: 
 - Run Tests
 ```bash
-xcodebuild test -project GolfTracker.xcodeproj -scheme GolfTracker -destination 'platform=iOS Simulator,name=iPhone 15'
+   xcodebuild test -project GolfTracker.xcodeproj -scheme GolfTracker -destination "platform=iOS Simulator,name=iPhone 16 Pro" -only-testing:GolfTrackerTests
 ```
 - Run UI Tests
 ```bash
-   xcodebuild test -project GolfTracker.xcodeproj -scheme GolfTracker -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:GolfTrackerUITests
+   xcodebuild test -project GolfTracker.xcodeproj -scheme GolfTracker -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:GolfTrackerUITests
 ```
 
 ## 📁 Empfohlene Ordnerstruktur
