@@ -9,7 +9,7 @@ on:
 env:
   XCODE_VERSION: '16.1'
   IOS_SIMULATOR_DEVICE: 'iPhone 16 Pro'
-  IOS_SIMULATOR_OS: '18.5'
+  IOS_SIMULATOR_OS: '18.1'
 
 jobs:
   test:
@@ -91,7 +91,7 @@ jobs:
         path: TestResults.xcresult
 
   build:
-    name: Build App
+    name: Build Verification
     runs-on: macos-15
     needs: test
     
@@ -135,20 +135,20 @@ jobs:
         </plist>
         EOF
         
-    - name: Build Archive
+    - name: Build for iOS Simulator (No Signing Required)
       run: |
-        xcodebuild clean archive \
+        xcodebuild clean build \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
-          -destination "generic/platform=iOS" \
-          -archivePath "GolfTracker.xcarchive" \
+          -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_DEVICE }},OS=${{ env.IOS_SIMULATOR_OS }}" \
           -derivedDataPath DerivedData
           
-    - name: Upload Build Artifact
+    - name: Upload Build Logs
       uses: actions/upload-artifact@v4
+      if: always()
       with:
-        name: golf-tracker-archive
-        path: GolfTracker.xcarchive
+        name: build-logs
+        path: DerivedData/Logs
 
   lint:
     name: SwiftLint
