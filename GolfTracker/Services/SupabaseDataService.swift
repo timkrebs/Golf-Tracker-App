@@ -19,7 +19,9 @@ class SupabaseDataService: ObservableObject {
         self.authService = authService
         
         // Use same configuration as auth service
-        let supabaseURL = URL(string: SupabaseConfig.supabaseURL)!
+        guard let supabaseURL = URL(string: SupabaseConfig.supabaseURL) else {
+            fatalError("Invalid Supabase URL configuration")
+        }
         let supabaseKey = SupabaseConfig.supabaseAnonKey
         
         self.supabase = SupabaseClient(
@@ -81,19 +83,35 @@ class SupabaseDataService: ObservableObject {
     private func fetchUserStats(userId: String) async throws -> UserGolfStats? {
         // Create response structure that matches Supabase format
         struct UserStatsResponse: Codable {
-            let user_id: String
-            let total_rounds: Int
-            let average_score: Double?
-            let best_score: Int?
-            let worst_score: Int?
-            let handicap_index: Double?
-            let total_birdies: Int
-            let total_eagles: Int
-            let total_pars: Int
-            let total_bogeys: Int
-            let favorite_course: String?
-            let last_played_date: String?
-            let updated_at: String
+            let userId: String
+            let totalRounds: Int
+            let averageScore: Double?
+            let bestScore: Int?
+            let worstScore: Int?
+            let handicapIndex: Double?
+            let totalBirdies: Int
+            let totalEagles: Int
+            let totalPars: Int
+            let totalBogeys: Int
+            let favoriteCourse: String?
+            let lastPlayedDate: String?
+            let updatedAt: String
+            
+            enum CodingKeys: String, CodingKey {
+                case userId = "user_id"
+                case totalRounds = "total_rounds"
+                case averageScore = "average_score"
+                case bestScore = "best_score"
+                case worstScore = "worst_score"
+                case handicapIndex = "handicap_index"
+                case totalBirdies = "total_birdies"
+                case totalEagles = "total_eagles"
+                case totalPars = "total_pars"
+                case totalBogeys = "total_bogeys"
+                case favoriteCourse = "favorite_course"
+                case lastPlayedDate = "last_played_date"
+                case updatedAt = "updated_at"
+            }
         }
         
         let response: [UserStatsResponse] = try await supabase
@@ -115,27 +133,27 @@ class SupabaseDataService: ObservableObject {
         
         // Convert response to UserGolfStats
         let lastPlayedDate: Date?
-        if let dateString = statsResponse.last_played_date {
+        if let dateString = statsResponse.lastPlayedDate {
             lastPlayedDate = simpleDateFormatter.date(from: dateString) ?? 
                            iso8601Formatter.date(from: dateString)
         } else {
             lastPlayedDate = nil
         }
         
-        let updatedAt = iso8601Formatter.date(from: statsResponse.updated_at) ?? Date()
+        let updatedAt = iso8601Formatter.date(from: statsResponse.updatedAt) ?? Date()
         
         return UserGolfStats(
-            userId: statsResponse.user_id,
-            totalRounds: statsResponse.total_rounds,
-            averageScore: statsResponse.average_score,
-            bestScore: statsResponse.best_score,
-            worstScore: statsResponse.worst_score,
-            handicapIndex: statsResponse.handicap_index,
-            totalBirdies: statsResponse.total_birdies,
-            totalEagles: statsResponse.total_eagles,
-            totalPars: statsResponse.total_pars,
-            totalBogeys: statsResponse.total_bogeys,
-            favoriteCourse: statsResponse.favorite_course,
+            userId: statsResponse.userId,
+            totalRounds: statsResponse.totalRounds,
+            averageScore: statsResponse.averageScore,
+            bestScore: statsResponse.bestScore,
+            worstScore: statsResponse.worstScore,
+            handicapIndex: statsResponse.handicapIndex,
+            totalBirdies: statsResponse.totalBirdies,
+            totalEagles: statsResponse.totalEagles,
+            totalPars: statsResponse.totalPars,
+            totalBogeys: statsResponse.totalBogeys,
+            favoriteCourse: statsResponse.favoriteCourse,
             lastPlayedDate: lastPlayedDate,
             updatedAt: updatedAt
         )
@@ -206,6 +224,9 @@ class SupabaseDataService: ObservableObject {
         let totalScore = scores.reduce(0, +)
         let handicapIndex = totalRounds > 5 ? Double(totalScore - totalPar) / Double(totalRounds) : nil
         
+        // Calculate hole score statistics
+        let (totalBirdies, totalEagles, totalPars, totalBogeys) = try await calculateHoleScoreStatistics(userId: userId)
+        
         // Create encodable stats structure for upsert
         struct UserStatsUpsert: Encodable {
             let user_id: String
@@ -233,12 +254,12 @@ class SupabaseDataService: ObservableObject {
             best_score: bestScore,
             worst_score: worstScore,
             handicap_index: handicapIndex,
-            total_birdies: 0, // TODO: Calculate from hole scores
-            total_eagles: 0,  // TODO: Calculate from hole scores
-            total_pars: 0,    // TODO: Calculate from hole scores
-            total_bogeys: 0,  // TODO: Calculate from hole scores
+            total_birdies: totalBirdies,
+            total_eagles: totalEagles,
+            total_pars: totalPars,
+            total_bogeys: totalBogeys
             favorite_course: favoriteCourse,
-            last_played_date: lastPlayedDate != nil ? dateFormatter.string(from: lastPlayedDate!) : nil,
+            last_played_date: lastPlayedDate.map { dateFormatter.string(from: $0) },
             updated_at: ISO8601DateFormatter().string(from: Date())
         )
         
@@ -254,14 +275,26 @@ class SupabaseDataService: ObservableObject {
         // Create response structure that matches Supabase format
         struct RoundResponse: Codable {
             let id: String
-            let user_id: String
-            let course_name: String
+            let userId: String
+            let courseName: String
             let date: String
-            let total_score: Int
+            let totalScore: Int
             let par: Int
             let notes: String?
-            let created_at: String
-            let updated_at: String
+            let createdAt: String
+            let updatedAt: String
+            
+            enum CodingKeys: String, CodingKey {
+                case id
+                case userId = "user_id"
+                case courseName = "course_name"
+                case date
+                case totalScore = "total_score"
+                case par
+                case notes
+                case createdAt = "created_at"
+                case updatedAt = "updated_at"
+            }
         }
         
         let response: [RoundResponse] = try await supabase
@@ -291,15 +324,15 @@ class SupabaseDataService: ObservableObject {
                        simpleDateFormatter.date(from: responseRound.date) ?? 
                        Date()
             
-            let createdAt = iso8601Formatter.date(from: responseRound.created_at) ?? Date()
-            let updatedAt = iso8601Formatter.date(from: responseRound.updated_at) ?? Date()
+            let createdAt = iso8601Formatter.date(from: responseRound.createdAt) ?? Date()
+            let updatedAt = iso8601Formatter.date(from: responseRound.updatedAt) ?? Date()
             
             return GolfRound(
                 id: responseRound.id,
-                userId: responseRound.user_id,
-                courseName: responseRound.course_name,
+                userId: responseRound.userId,
+                courseName: responseRound.courseName,
                 date: date,
-                totalScore: responseRound.total_score,
+                totalScore: responseRound.totalScore,
                 par: responseRound.par,
                 holes: [], // Empty for now
                 notes: responseRound.notes,
@@ -322,19 +355,28 @@ class SupabaseDataService: ObservableObject {
         
         // Create encodable round data structure
         struct RoundInsert: Encodable {
-            let user_id: String
-            let course_name: String
+            let userId: String
+            let courseName: String
             let date: String
-            let total_score: Int
+            let totalScore: Int
             let par: Int
             let notes: String
+            
+            enum CodingKeys: String, CodingKey {
+                case userId = "user_id"
+                case courseName = "course_name"
+                case date
+                case totalScore = "total_score"
+                case par
+                case notes
+            }
         }
         
         let roundData = RoundInsert(
-            user_id: userId,
-            course_name: request.courseName,
+            userId: userId,
+            courseName: request.courseName,
             date: ISO8601DateFormatter().string(from: request.date),
-            total_score: request.totalScore,
+            totalScore: request.totalScore,
             par: request.par,
             notes: request.notes ?? ""
         )
@@ -487,5 +529,66 @@ class SupabaseDataService: ObservableObject {
     
     func clearData() {
         dashboardData = DashboardData()
+    }
+    
+    private func calculateHoleScoreStatistics(userId: String) async throws -> (birdies: Int, eagles: Int, pars: Int, bogeys: Int) {
+        // Fetch all hole scores for the user
+        struct HoleScoreResponse: Codable {
+            let holeNumber: Int
+            let par: Int
+            let strokes: Int
+            
+            enum CodingKeys: String, CodingKey {
+                case holeNumber = "hole_number"
+                case par
+                case strokes
+            }
+        }
+        
+        let holeScores: [HoleScoreResponse] = try await supabase
+            .from("hole_scores")
+            .select("hole_number, par, strokes")
+            .in("round_id", values: try await fetchAllRoundIds(userId: userId))
+            .execute()
+            .value
+        
+        var birdies = 0
+        var eagles = 0
+        var pars = 0
+        var bogeys = 0
+        
+        for score in holeScores {
+            let difference = score.strokes - score.par
+            
+            switch difference {
+            case ...(-2):
+                eagles += 1
+            case -1:
+                birdies += 1
+            case 0:
+                pars += 1
+            case 1...:
+                bogeys += 1
+            default:
+                break
+            }
+        }
+        
+        return (birdies, eagles, pars, bogeys)
+    }
+    
+    private func fetchAllRoundIds(userId: String) async throws -> [String] {
+        struct RoundIdResponse: Codable {
+            let id: String
+        }
+        
+        let response: [RoundIdResponse] = try await supabase
+            .from("golf_rounds")
+            .select("id")
+            .eq("user_id", value: userId)
+            .execute()
+            .value
+        
+        return response.map { $0.id }
     }
 } 
