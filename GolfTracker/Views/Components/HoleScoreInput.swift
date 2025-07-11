@@ -31,14 +31,14 @@ struct HoleScoreInput: View {
                         Button(action: {
                             par = parValue
                             onParUpdate(parValue)
-                        }) {
+                        }, label: {
                             Text("\(parValue)")
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(par == parValue ? .white : Color(red: 0.2, green: 0.8, blue: 0.4))
                                 .frame(width: 40, height: 40)
                                 .background(par == parValue ? Color(red: 0.2, green: 0.8, blue: 0.4) : Color.gray.opacity(0.2))
                                 .cornerRadius(8)
-                        }
+                        })
                     }
                 }
             }
@@ -117,7 +117,7 @@ struct HoleScoreInput: View {
             }
             
             // Save button
-            Button(action: saveHoleScore) {
+            Button(action: saveHoleScore, label: {
                 Text("Score speichern")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
@@ -125,7 +125,7 @@ struct HoleScoreInput: View {
                     .frame(height: 44)
                     .background(strokes.isEmpty ? Color.gray : Color(red: 0.2, green: 0.8, blue: 0.4))
                     .cornerRadius(12)
-            }
+            })
             .disabled(strokes.isEmpty)
         }
         .padding(20)

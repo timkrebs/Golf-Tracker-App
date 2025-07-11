@@ -28,17 +28,21 @@ struct ScoreDisplayView: View {
     
     private var scoreColor: Color {
         let relative = strokes - par
-        if relative < 0 { return .green }
-        else if relative == 0 { return .blue }
-        else if relative <= 2 { return .orange }
-        else { return .red }
+        switch relative {
+        case ..<0: return .green
+        case 0: return .blue
+        case 1...2: return .orange
+        default: return .red
+        }
     }
     
     private var scoreText: String {
         let relative = strokes - par
-        if relative == 0 { return "Par" }
-        else if relative > 0 { return "+\(relative)" }
-        else { return "\(relative)" }
+        switch relative {
+        case 0: return "Par"
+        case 1...: return "+\(relative)"
+        default: return "\(relative)"
+        }
     }
     
     var body: some View {
@@ -63,7 +67,7 @@ struct HoleNavigationButtons: View {
                 if inProgressRound.currentHole > 1 {
                     inProgressRound.currentHole -= 1
                 }
-            }) {
+            }, label: {
                 HStack {
                     Image(systemName: "chevron.left")
                     Text("Vorheriges")
@@ -74,7 +78,7 @@ struct HoleNavigationButtons: View {
                 .padding(.vertical, 10)
                 .background(inProgressRound.currentHole > 1 ? Color.white.opacity(0.2) : Color.gray.opacity(0.3))
                 .cornerRadius(8)
-            }
+            })
             .disabled(inProgressRound.currentHole <= 1)
             
             Spacer()
@@ -83,7 +87,7 @@ struct HoleNavigationButtons: View {
                 if inProgressRound.currentHole < inProgressRound.numberOfHoles {
                     inProgressRound.currentHole += 1
                 }
-            }) {
+            }, label: {
                 HStack {
                     Text("Nächstes")
                     Image(systemName: "chevron.right")
@@ -94,7 +98,7 @@ struct HoleNavigationButtons: View {
                 .padding(.vertical, 10)
                 .background(inProgressRound.currentHole < inProgressRound.numberOfHoles ? Color.white.opacity(0.2) : Color.gray.opacity(0.3))
                 .cornerRadius(8)
-            }
+            })
             .disabled(inProgressRound.currentHole >= inProgressRound.numberOfHoles)
         }
     }
@@ -147,7 +151,7 @@ struct FinishRoundButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button(action: action, label: {
             HStack {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 20))
@@ -159,6 +163,6 @@ struct FinishRoundButton: View {
             .frame(height: 56)
             .background(Color.green)
             .cornerRadius(16)
-        }
+        })
     }
 } 
