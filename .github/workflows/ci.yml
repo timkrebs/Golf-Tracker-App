@@ -29,9 +29,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          .build
-          DerivedData
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          GolfTracker/.build
+          GolfTracker/DerivedData
+        key: ${{ runner.os }}-spm-${{ hashFiles('GolfTracker.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
           
@@ -57,10 +57,12 @@ jobs:
         
     - name: Resolve Swift Package Dependencies
       run: |
+        cd GolfTracker
         xcodebuild -resolvePackageDependencies -project GolfTracker.xcodeproj
         
     - name: Build for Testing
       run: |
+        cd GolfTracker
         xcodebuild clean build-for-testing \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
@@ -69,6 +71,7 @@ jobs:
           
     - name: Run Unit Tests
       run: |
+        cd GolfTracker
         xcodebuild test-without-building \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
@@ -81,7 +84,7 @@ jobs:
       if: always()
       with:
         name: test-results
-        path: TestResults.xcresult
+        path: GolfTracker/TestResults.xcresult
 
   build:
     name: Build App
@@ -101,9 +104,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: |
-          .build
-          DerivedData
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          GolfTracker/.build
+          GolfTracker/DerivedData
+        key: ${{ runner.os }}-spm-${{ hashFiles('GolfTracker.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
           
@@ -129,6 +132,7 @@ jobs:
         
     - name: Build Archive
       run: |
+        cd GolfTracker
         xcodebuild clean archive \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
@@ -140,7 +144,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: golf-tracker-archive
-        path: GolfTracker.xcarchive
+        path: GolfTracker/GolfTracker.xcarchive
 
   lint:
     name: SwiftLint
@@ -154,4 +158,6 @@ jobs:
       run: brew install swiftlint
       
     - name: Run SwiftLint
-      run: swiftlint lint --strict 
+      run: |
+        cd GolfTracker
+        swiftlint lint --strict 
