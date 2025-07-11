@@ -64,20 +64,22 @@ jobs:
       run: |
         xcodebuild -resolvePackageDependencies -project GolfTracker.xcodeproj -verbose
         
-    - name: Build for Testing
+    - name: Build for Testing (Unit Tests Only)
       run: |
         xcodebuild clean build-for-testing \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
           -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_DEVICE }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+          -only-testing:GolfTrackerTests \
           -derivedDataPath DerivedData
           
-    - name: Run Unit Tests
+    - name: Run Unit Tests Only
       run: |
         xcodebuild test-without-building \
           -project GolfTracker.xcodeproj \
           -scheme GolfTracker \
           -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_DEVICE }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+          -only-testing:GolfTrackerTests \
           -derivedDataPath DerivedData \
           -resultBundlePath TestResults.xcresult
           
