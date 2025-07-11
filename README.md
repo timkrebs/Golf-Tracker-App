@@ -151,6 +151,42 @@ The `SupabaseAuthService` handles all authentication operations:
 - **Course Management**: Course database included
 - **Social Features**: User data isolated and ready for sharing features
 
+## 🗺️ Roadmap
+
+### 🏆 Social & Gamification Features
+- **🤝 Friend System**: Add friends to compete against and share statistics
+- **📊 Leaderboards**: Compare performance with friends and global rankings
+- **🎮 Achievements**: Unlock badges and rewards for golf milestones
+- **📱 Social Sharing**: Share round results and achievements on social media
+
+### 📲 User Experience & Engagement
+- **🔔 Smart Notifications**: Remind users to play rounds and track progress
+- **📱 Lock Screen Widget**: Show current hole number and progress bar during rounds
+- **⌚ Apple Watch Integration**: Quick score entry and round tracking from wrist
+- **📍 GPS Integration**: Automatic course detection and distance measurements
+
+### 💎 Premium Features & Monetization
+- **💳 Subscription Model**: Freemium approach with premium tier
+- **🎯 Golf Pro AI Coach**: 
+  - 📹 Video swing analysis using device camera
+  - 🤖 AI-powered tips for improving technique and handicap
+  - 📊 Advanced performance analytics and recommendations
+  - 🎓 Personalized training programs
+- **📈 Advanced Analytics**: 
+  - Detailed shot tracking and club recommendations
+  - Weather impact analysis on performance
+  - Predictive handicap modeling
+- **🏌️ Pro Features**:
+  - Unlimited round storage
+  - Export data to popular golf platforms
+  - Priority customer support
+
+### 🔮 Future Innovations
+- **🥽 AR Features**: Augmented reality for course mapping and shot visualization
+- **🤖 Voice Assistant**: "Hey Golf Pro" voice commands for hands-free score entry
+- **📊 Tournament Mode**: Create and manage tournaments with friends
+- **🌐 Course Reviews**: Community-driven course ratings and reviews
+
 ## Usage
 
 ### Authentication Flow
