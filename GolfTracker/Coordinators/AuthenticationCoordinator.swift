@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct AuthenticationCoordinator: View {
-    @StateObject private var authService = SupabaseAuthService()
+    @StateObject private var authService: SupabaseAuthService
     @StateObject private var dataService: SupabaseDataService
     
     init() {
-        let auth = SupabaseAuthService()
-        _authService = StateObject(wrappedValue: auth)
-        _dataService = StateObject(wrappedValue: SupabaseDataService(authService: auth))
+        // Create a single authService instance that will be shared
+        let authServiceInstance = SupabaseAuthService()
+        _authService = StateObject(wrappedValue: authServiceInstance)
+        _dataService = StateObject(wrappedValue: SupabaseDataService(authService: authServiceInstance))
     }
     
     var body: some View {

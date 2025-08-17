@@ -14,6 +14,7 @@ struct ActiveRoundView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @State private var showingFinishAlert = false
+    @State private var showingExitOptions = false
     @State private var isFinishing = false
     @State private var showingScore = false
     @State private var finishedScore: Int?
@@ -64,13 +65,35 @@ struct ActiveRoundView: View {
                     // Navigation buttons
                     HoleNavigationButtons(inProgressRound: inProgressRound)
                     
-                    // Finish round button
-                    if canFinishRound {
-                        FinishRoundButton(action: {
-                            showingFinishAlert = true
-                        })
-                        .padding(.top, 20)
+                    // Round control buttons
+                    VStack(spacing: 12) {
+                        // Finish round button (only if all holes completed)
+                        if canFinishRound {
+                            FinishRoundButton(action: {
+                                showingFinishAlert = true
+                            })
+                        }
+                        
+                        // Early finish option (if at least some holes completed)
+                        if inProgressRound.completedHoles > 0 && !canFinishRound {
+                            Button(action: {
+                                showingExitOptions = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "flag.checkered")
+                                        .font(.system(size: 16))
+                                    Text("Runde vorzeitig beenden")
+                                        .font(.system(size: 16, weight: .semibold))
+                                }
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                                .background(Color.orange)
+                                .cornerRadius(12)
+                            }
+                        }
                     }
+                    .padding(.top, 20)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
@@ -80,9 +103,9 @@ struct ActiveRoundView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button("Abbrechen") {
-                    presentationMode.wrappedValue.dismiss()
-            }
+                Button("Menü") {
+                    showingExitOptions = true
+                }
                 .foregroundColor(.white)
             }
             
@@ -102,14 +125,33 @@ struct ActiveRoundView: View {
         } message: {
             Text("Möchten Sie die Runde wirklich beenden? Dies kann nicht rückgängig gemacht werden.")
         }
-        .alert("Runde beendet!", isPresented: $showingScore) {
+        .alert("Runde gespeichert!", isPresented: $showingScore) {
             Button("OK") {
                 presentationMode.wrappedValue.dismiss()
             }
         } message: {
             if let score = finishedScore {
-                Text("Ihre finale Punktzahl: \(score)")
+                if canFinishRound {
+                    Text("Ihre finale Punktzahl: \(score)")
+                } else {
+                    Text("Unvollständige Runde gespeichert. Punktzahl: \(score)")
+                }
             }
+        }
+        .actionSheet(isPresented: $showingExitOptions) {
+            ActionSheet(
+                title: Text("Runde beenden?"),
+                message: Text("Was möchten Sie mit der aktuellen Runde machen?"),
+                buttons: [
+                    .default(Text("Als unvollständig speichern")) {
+                        saveIncompleteRound()
+                    },
+                    .destructive(Text("Runde verwerfen")) {
+                        discardRound()
+                    },
+                    .cancel(Text("Weiter spielen"))
+                ]
+            )
         }
     }
     
@@ -269,6 +311,63 @@ struct ActiveRoundView: View {
                 }
             }
         }
+    }
+    
+    private func saveIncompleteRound() {
+        isFinishing = true
+        
+        Task {
+            do {
+                // Create request with only completed holes
+                let completedHoles = inProgressRound.holes.filter { $0.strokes != nil }
+                
+                if !completedHoles.isEmpty {
+                    let createRequest = CreateRoundRequest(
+                        courseName: inProgressRound.courseName,
+                        date: Date(),
+                        totalScore: completedHoles.reduce(0) { $0 + ($1.strokes ?? 0) },
+                        par: completedHoles.reduce(0) { $0 + $1.par },
+                        holes: completedHoles.map { hole in
+                            CreateHoleScoreRequest(
+                                holeNumber: hole.holeNumber,
+                                par: hole.par,
+                                strokes: hole.strokes ?? 0,
+                                putts: hole.putts,
+                                fairwayHit: hole.fairwayHit,
+                                greenInRegulation: hole.greenInRegulation
+                            )
+                        },
+                        notes: "Unvollständige Runde - \(completedHoles.count) von \(inProgressRound.numberOfHoles) Löchern gespielt"
+                    )
+                    
+                    _ = try await dataService.createRound(createRequest)
+                    
+                    await MainActor.run {
+                        isFinishing = false
+                        finishedScore = completedHoles.reduce(0) { $0 + ($1.strokes ?? 0) }
+                        showingScore = true
+                    }
+                } else {
+                    // No holes completed, just dismiss
+                    await MainActor.run {
+                        isFinishing = false
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    isFinishing = false
+                    print("Error saving incomplete round: \(error)")
+                    // Could show error alert here
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+        }
+    }
+    
+    private func discardRound() {
+        // Simply dismiss without saving anything
+        presentationMode.wrappedValue.dismiss()
     }
 }
 
