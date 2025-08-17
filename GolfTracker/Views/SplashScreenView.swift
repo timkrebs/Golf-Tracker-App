@@ -49,59 +49,39 @@ struct SplashScreenView: View {
                 
                 // Main Logo Section
                 VStack(spacing: 20) {
-                    // Golf ball and flag icon
+                    // Golf Logo - consistent with Dashboard
                     ZStack {
-                        // Outer glow circle
+                        // Outer glow circle with improved animation
                         Circle()
-                            .fill(Color.white.opacity(0.1))
-                            .frame(width: 140, height: 140)
-                            .scaleEffect(isAnimating ? 1.1 : 1.0)
+                            .fill(
+                                RadialGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.white.opacity(0.2),
+                                        Color.white.opacity(0.05)
+                                    ]),
+                                    center: .center,
+                                    startRadius: 20,
+                                    endRadius: 80
+                                )
+                            )
+                            .frame(width: 160, height: 160)
+                            .scaleEffect(isAnimating ? 1.05 : 1.0)
                         
-                        // Main circle
+                        // Main logo background - same as Dashboard but larger
                         Circle()
-                            .fill(Color.white.opacity(0.15))
-                            .frame(width: 120, height: 120)
-                        
-                        // Golf icon
-                        ZStack {
-                            // Flag pole
-                            Rectangle()
-                                .fill(Color.white)
-                                .frame(width: 2, height: 30)
-                                .offset(x: -8, y: 0)
-                            
-                            // Flag
-                            Path { path in
-                                path.move(to: CGPoint(x: -6, y: -15))
-                                path.addLine(to: CGPoint(x: 12, y: -10))
-                                path.addLine(to: CGPoint(x: 12, y: 0))
-                                path.addLine(to: CGPoint(x: -6, y: -5))
-                                path.closeSubpath()
-                            }
                             .fill(Color.white)
-                            
-                            // Golf ball
-                            Circle()
-                                .fill(Color.white)
-                                .frame(width: 8, height: 8)
-                                .offset(x: -12, y: 12)
-                            
-                            // Small dimples on golf ball
-                            VStack(spacing: 1) {
-                                HStack(spacing: 1) {
-                                    Circle().fill(Color.green.opacity(0.3)).frame(width: 1, height: 1)
-                                    Circle().fill(Color.green.opacity(0.3)).frame(width: 1, height: 1)
-                                }
-                                Circle().fill(Color.green.opacity(0.3)).frame(width: 1, height: 1)
-                            }
-                            .offset(x: -12, y: 12)
-                        }
-                        .font(.system(size: 24, weight: .bold))
+                            .frame(width: 120, height: 120)
+                            .shadow(color: .black.opacity(0.15), radius: 15, x: 0, y: 8)
+                        
+                        // Golf Flag Icon - exactly like Dashboard
+                        Image(systemName: "flag.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(Color(red: 0.2, green: 0.8, blue: 0.4))
                     }
                     .scaleEffect(logoScale)
                     .opacity(logoOpacity)
                     .rotation3DEffect(
-                        .degrees(isAnimating ? 5 : 0),
+                        .degrees(isAnimating ? 3 : 0),
                         axis: (x: 0, y: 1, z: 0)
                     )
                     
@@ -121,19 +101,20 @@ struct SplashScreenView: View {
                 
                 Spacer()
                 
-                // Loading indicator
+                // Enhanced Loading indicator
                 VStack(spacing: 16) {
-                    // Custom golf-themed loading indicator
-                    HStack(spacing: 8) {
+                    // Improved golf-themed loading indicator
+                    HStack(spacing: 6) {
                         ForEach(0..<3) { index in
                             Circle()
                                 .fill(Color.white)
-                                .frame(width: 8, height: 8)
-                                .scaleEffect(isAnimating ? 1.0 : 0.5)
+                                .frame(width: 10, height: 10)
+                                .scaleEffect(isAnimating ? 1.2 : 0.8)
+                                .opacity(isAnimating ? 1.0 : 0.6)
                                 .animation(
-                                    Animation.easeInOut(duration: 0.6)
+                                    Animation.easeInOut(duration: 0.8)
                                         .repeatForever()
-                                        .delay(Double(index) * 0.2),
+                                        .delay(Double(index) * 0.15),
                                     value: isAnimating
                                 )
                         }
@@ -177,24 +158,24 @@ struct SplashScreenView: View {
     }
     
     private func startAnimations() {
-        // Background fade in
-        withAnimation(.easeIn(duration: 0.5)) {
+        // Background fade in with smoother timing
+        withAnimation(.easeIn(duration: 0.4)) {
             backgroundOpacity = 1.0
         }
         
-        // Logo scale and fade in
-        withAnimation(.spring(response: 0.8, dampingFraction: 0.6, blendDuration: 0).delay(0.3)) {
+        // Logo scale and fade in with improved spring animation
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.7, blendDuration: 0).delay(0.2)) {
             logoScale = 1.0
             logoOpacity = 1.0
         }
         
-        // Text fade in
-        withAnimation(.easeInOut(duration: 0.6).delay(0.6)) {
+        // Text fade in with better timing
+        withAnimation(.easeInOut(duration: 0.5).delay(0.5)) {
             textOpacity = 1.0
         }
         
-        // Start continuous animations
-        withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true).delay(1.0)) {
+        // Start continuous animations with smoother cycle
+        withAnimation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true).delay(0.8)) {
             isAnimating = true
         }
     }
