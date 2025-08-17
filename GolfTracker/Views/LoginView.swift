@@ -230,6 +230,16 @@ struct LoginView: View {
             Button("OK") {
                 authService.errorMessage = nil
             }
+            
+            // Show resend button if error mentions email confirmation
+            if authService.errorMessage?.contains("bestätigen") == true {
+                Button("E-Mail erneut senden") {
+                    Task {
+                        await authService.resendConfirmationEmail(email: email)
+                        authService.errorMessage = nil
+                    }
+                }
+            }
         } message: {
             Text(authService.errorMessage ?? "")
         }
